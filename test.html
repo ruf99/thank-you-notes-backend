@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>API Tester</title>
+    <style>
+        body { font-family: Arial, sans-serif; max-width: 800px; margin: 0 auto; padding: 20px; }
+        .endpoint { margin-bottom: 20px; border: 1px solid #ccc; padding: 15px; border-radius: 5px; }
+        button { padding: 8px 15px; background: #4CAF50; color: white; border: none; cursor: pointer; border-radius: 4px; }
+        textarea { width: 100%; height: 100px; margin: 10px 0; }
+        .response { background: #f5f5f5; padding: 10px; border-radius: 4px; white-space: pre-wrap; }
+        h2 { margin-top: 0; }
+    </style>
+</head>
+<body>
+    <h1>API Endpoint Tester</h1>
+    
+    <div class="endpoint">
+        <h2>POST /api/submit</h2>
+        <textarea id="submitPayload">{
+  "text": "This is a test thank you note."
+}</textarea>
+        <button onclick="testSubmit()">Send Request</button>
+        <div id="submitResponse" class="response"></div>
+    </div>
+    
+    <div class="endpoint">
+        <h2>GET /api/entries</h2>
+        <button onclick="testGetEntries()">Send Request</button>
+        <div id="entriesResponse" class="response"></div>
+    </div>
+    
+    <div class="endpoint">
+        <h2>POST /api/upvote/:id</h2>
+        <input type="number" id="upvoteId" placeholder="Entry ID" value="1">
+        <button onclick="testUpvote()">Send Request</button>
+        <div id="upvoteResponse" class="response"></div>
+    </div>
+    
+    <div class="endpoint">
+        <h2>POST /api/check-user</h2>
+        <textarea id="checkUserPayload">{
+  "userId": "user123"
+}</textarea>
+        <button onclick="testCheckUser()">Send Request</button>
+        <div id="checkUserResponse" class="response"></div>
+    </div>
+    
+    <div class="endpoint">
+        <h2>POST /api/record-user</h2>
+        <textarea id="recordUserPayload">{
+  "userId": "user123"
+}</textarea>
+        <button onclick="testRecordUser()">Send Request</button>
+        <div id="recordUserResponse" class="response"></div>
+    </div>
+
+    <script>
+        const baseUrl = "https://thank-you-notes-backend.onrender.com";
+        
+        async function fetchWithJson(url, method, body) {
+            try {
+                const response = await fetch(url, {
+                    method: method,
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: body ? body : undefined
+                });
+                
+                if (response.status === 204) return "Success (No Content)";
+                
+                const data = await response.json();
+                return JSON.stringify(data, null, 2);
+            } catch (error) {
+                return `Error: ${error.message}`;
+            }
+        }
+        
+        async function testSubmit() {
+            const payload = document.getElementById('submitPayload').value;
+            const result = await fetchWithJson(`${baseUrl}/api/submit`, 'POST', payload);
+            document.getElementById('submitResponse').textContent = result;
+        }
+        
+        async function testGetEntries() {
+            const result = await fetchWithJson(`${baseUrl}/api/entries`, 'GET');
+            document.getElementById('entriesResponse').textContent = result;
+        }
+        
+        async function testUpvote() {
+            const id = document.getElementById('upvoteId').value;
+            const result = await fetchWithJson(`${baseUrl}/api/upvote/${id}`, 'POST');
+            document.getElementById('upvoteResponse').textContent = result;
+        }
+        
+        async function testCheckUser() {
+            const payload = document.getElementById('checkUserPayload').value;
+            const result = await fetchWithJson(`${baseUrl}/api/check-user`, 'POST', payload);
+            document.getElementById('checkUserResponse').textContent = result;
+        }
+        
+        async function testRecordUser() {
+            const payload = document.getElementById('recordUserPayload').value;
+            const result = await fetchWithJson(`${baseUrl}/api/record-user`, 'POST', payload);
+            document.getElementById('recordUserResponse').textContent = result;
+        }
+    </script>
+</body>
+</html>
