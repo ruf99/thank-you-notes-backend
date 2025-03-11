@@ -23,6 +23,11 @@ db.serialize(() => {
   `);
 });
 
+//get working marker
+app.get('/', (req, res) => {
+  res.send('Thank You Notes Backend is running!');
+});
+
 // Submit entry
 app.post('/api/submit', (req, res) => {
   const { text } = req.body;
